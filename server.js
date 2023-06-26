@@ -34,7 +34,7 @@ app.get('/data-account', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    return res.json("succesfull");
+    return res.json("succesfull 1");
 })
 
 app.listen(3306, () =>{
