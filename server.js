@@ -36,6 +36,6 @@ app.get('/', (req, res) => {
     return res.json("succesfull 1");
 })
 
-app.listen(3306, () =>{
+app.listen(3000, () =>{
     console.log("listening");
 })
