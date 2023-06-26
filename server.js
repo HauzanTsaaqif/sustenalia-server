@@ -36,7 +36,3 @@ app.get('/data-account', (req, res) => {
 app.get('/', (req, res) => {
     return res.json("succesfull");
 })
-
-app.listen(3306, () =>{
-    console.log("listening");
-})
