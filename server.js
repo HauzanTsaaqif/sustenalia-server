@@ -36,6 +36,6 @@ app.get('/', (req, res) => {
     return res.json("succesfull 1");
 })
 
-app.listen(3000, () =>{
+app.listen(process.env.PORT, () =>{
     console.log("listening");
 })
