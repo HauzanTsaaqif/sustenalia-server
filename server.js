@@ -1,41 +1,37 @@
 const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const PDFDocument = require('pdfkit');
-const pdfFonts = require('pdfmake/build/vfs_fonts');
+const { db } = require('@vercel/postgres');
 
 const app = express();
-app.use(cors());
+const port = process.env.PORT || 3001;
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.json());
 
-const { Pool } = require('pg');
+app.get('/', async (req, res) => {
+  const client = await db.connect();
 
-const pool = new Pool({
-  connectionString: 'postgres://default:LO1wdI2GgHWV@ep-tiny-limit-795119.us-east-1.postgres.vercel-storage.com:5432/verceldb',
-  ssl: {
-    rejectUnauthorized: false
+  try {
+    await client.query(
+      `CREATE TABLE IF NOT EXISTS Pets (Name varchar(255), Owner varchar(255));`
+    );
+
+    const names = ['Fiona', 'Lucy'];
+    await client.query(
+      `INSERT INTO Pets (Name, Owner) VALUES ($1, $2);`,
+      names
+    );
+
+    const result = await client.query(`SELECT * FROM Pets;`);
+    const pets = result.rows;
+
+    return res.json({ pets });
+  } catch (error) {
+    console.error('Error executing SQL query:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    client.release();
   }
 });
 
-app.get('/data-account', (req, res) => {
-  const sql = 'SELECT * FROM data_account';
-  
-  pool.query(sql, (err, result) => {
-    if (err) {
-      console.error('Gagal menjalankan query:', err);
-      return res.json(err);
-    } else {
-      return res.json(result.rows);
-    }
-  });
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
-
-app.get('/', (req, res) => {
-    return res.json("succesfull 1");
-})
-
-app.listen(process.env.PORT, () =>{
-    console.log("listening");
-})
